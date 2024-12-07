@@ -42,17 +42,36 @@ const AllVendors = () => {
     () => [
       {
         header: ' Reporter',
-        accessorFn: (dataRow) => (dataRow.reporter.email ? <p>{dataRow.reporter?.email}</p> : ''),
+
+        accessorFn: (dataRow) => {
+          const { reporter } = dataRow
+          console.log(reporter);
+          if(reporter){
+          const email = reporter.email
+          return email
+          }else{
+            return ""
+          }
+        },
         size: 150,
       },
       {
         header: ' Reported',
-        accessorFn: (dataRow) => (dataRow.reported.email ? <p>{dataRow.reported?.email}</p> : ''),
+        accessorFn: (dataRow) => {
+          const { reported } = dataRow
+          console.log(reported);
+          if(reported){
+          const email = reported.email
+          return email
+          }else{
+            return ""
+          }
+        },
         size: 150,
       },
       {
         header: ' Reason',
-        accessorFn: (dataRow) => (dataRow.reason ? <p>{dataRow?.reason}</p> : ''),
+        accessorFn: (dataRow) => (dataRow.reason !== null ? <p>{dataRow?.reason}</p> : ''),
         size: 150,
       },
 
