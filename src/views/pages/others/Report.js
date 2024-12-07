@@ -42,17 +42,17 @@ const AllVendors = () => {
     () => [
       {
         header: ' Reporter',
-        accessorFn: (dataRow) => <p>{dataRow.reporter.email}</p>,
+        accessorFn: (dataRow) => (dataRow.reporter.email ? <p>{dataRow.reporter?.email}</p> : ''),
         size: 150,
       },
       {
         header: ' Reported',
-        accessorFn: (dataRow) => <p>{dataRow.reported.email}</p>,
+        accessorFn: (dataRow) => (dataRow.reported.email ? <p>{dataRow.reported?.email}</p> : ''),
         size: 150,
       },
       {
         header: ' Reason',
-        accessorFn: (dataRow) => <p>{dataRow.reason}</p>,
+        accessorFn: (dataRow) => (dataRow.reason ? <p>{dataRow?.reason}</p> : ''),
         size: 150,
       },
 
