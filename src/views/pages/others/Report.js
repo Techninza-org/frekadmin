@@ -45,12 +45,12 @@ const AllVendors = () => {
 
         accessorFn: (dataRow) => {
           const { reporter } = dataRow
-          console.log(reporter);
-          if(reporter){
-          const email = reporter.email
-          return email
-          }else{
-            return ""
+          console.log(reporter)
+          if (reporter) {
+            const email = reporter.email
+            return email
+          } else {
+            return ''
           }
         },
         size: 150,
@@ -59,12 +59,12 @@ const AllVendors = () => {
         header: ' Reported',
         accessorFn: (dataRow) => {
           const { reported } = dataRow
-          console.log(reported);
-          if(reported){
-          const email = reported.email
-          return email
-          }else{
-            return ""
+          console.log(reported)
+          if (reported) {
+            const email = reported.email
+            return email
+          } else {
+            return ''
           }
         },
         size: 150,
@@ -142,7 +142,7 @@ const AllVendors = () => {
         <AppHeader />
         <div className="body flex-grow-1">
           <div className="mx-3 mb-2">
-            <h4 className="mb-2">Transection History</h4>
+            <h4 className="mb-2">Reports</h4>
             <MantineReactTable table={table} />
           </div>
         </div>

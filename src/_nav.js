@@ -23,11 +23,11 @@ const _nav = [
 
   {
     component: CNavTitle,
-    name: 'Transection History',
+    name: 'Transaction History',
   },
   {
     component: CNavItem,
-    name: 'Transection History',
+    name: 'Transaction History',
     to: '/vendors',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },

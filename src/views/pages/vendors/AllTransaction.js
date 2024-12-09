@@ -142,7 +142,7 @@ const AllTransaction = () => {
         <AppHeader />
         <div className="body flex-grow-1">
           <div className="mx-3 mb-2">
-            <h4 className="mb-2">Transection History</h4>
+            <h4 className="mb-2">Transaction history</h4>
             <MantineReactTable table={table} />
           </div>
         </div>
