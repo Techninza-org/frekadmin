@@ -7,12 +7,13 @@ const SuperLike = () => {
   const [input2, setInput2] = useState('') // superlikes
   const [dbConstantKey, setDbConstantKey] = useState('') // Input for the key
   const [dbConstantValue, setDbConstantValue] = useState('') // Input for the value
-  const [dbConstants, setDbConstants] = useState([])
+  const [dbConstants, setDbConstants] = useState([]) // Database constants
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
-  const [packages, setPackages] = useState([])
-
+  const [packages, setPackages] = useState([]) // Packages state
+  const [inputValue, setInputValue] = useState('') // Input value for API interaction
+  const [responseValue, setResponseValue] = useState('') // Response value from API
   const token = localStorage.getItem('token')
 
   // Fetch all packages on component mount
@@ -31,6 +32,25 @@ const SuperLike = () => {
       }
     }
     fetchPackages()
+  }, [token])
+
+  // Fetch SuperLikes per Price constant
+  useEffect(() => {
+    const fetchDbConstant = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}admin/getDbConstants`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        setResponseValue(response.data?.getDbConstants?.perSuperLikePrice || 'No data received')
+      } catch (error) {
+        console.error('Error fetching DB constants:', error)
+        setResponseValue('Error fetching constant!')
+      }
+    }
+    fetchDbConstant()
   }, [token])
 
   const handleDbConstantSubmit = async (e) => {
@@ -66,7 +86,6 @@ const SuperLike = () => {
       setDbConstants((prev) => {
         const index = prev.findIndex((item) => item.key === updatedConstant.key)
         if (index !== -1) {
-          // Update existing constant
           const updatedConstants = [...prev]
           updatedConstants[index] = updatedConstant
           return updatedConstants
@@ -75,6 +94,7 @@ const SuperLike = () => {
       })
 
       setSuccess('Constant set successfully')
+      setResponseValue(updatedConstant.value) // Update the displayed constant
     } catch (err) {
       console.error('Error setting DB constant:', err)
       setError('Failed to set DB constant')
@@ -125,22 +145,70 @@ const SuperLike = () => {
     }
   }
 
+  // Updated handleDelete function
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_BASE_URL}admin/deletePackage/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      // Send delete request to the API
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}admin/deletePackage/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
-      setPackages((prevPackages) => prevPackages.filter((pkg) => pkg.id !== id))
-      setSuccess('Package deleted successfully')
+      )
 
-      setTimeout(() => {
-        setSuccess(null)
-      }, 5000)
+      // Check if the response was successful
+      if (response.status === 200) {
+        // Update the state to remove the deleted package
+        setPackages((prevPackages) => prevPackages.filter((pkg) => pkg.id !== id))
+        setSuccess('Package deleted successfully')
+
+        // Reset success message after 5 seconds
+        setTimeout(() => {
+          setSuccess(null)
+        }, 5000)
+      } else {
+        setError('Failed to delete package')
+      }
     } catch (err) {
       console.error('Error deleting package:', err)
       setError('Error deleting package!')
+    }
+  }
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value)
+  }
+
+  const handleApiInteractionSubmit = async () => {
+    setLoading(true)
+    try {
+      const [putResponse, getResponse] = await Promise.all([
+        axios.put(
+          `${import.meta.env.VITE_BASE_URL}admin/setDbConstant`,
+          { data: inputValue },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+        axios.get(`${import.meta.env.VITE_BASE_URL}admin/getDbConstants`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }),
+      ])
+
+      setResponseValue(getResponse.data?.getDbConstants?.perSuperLikePrice || 'No data received')
+    } catch (error) {
+      console.error('Error during API calls:', error)
+      setResponseValue('Error: Could not complete requests.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -152,6 +220,46 @@ const SuperLike = () => {
         <div className="container mt-5">
           <h1 className="text-center">Superlikes</h1>
 
+          {/* DB Constant Form */}
+          <div className="mt-5">
+            <form onSubmit={handleDbConstantSubmit}>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="dbConstantKey" className="form-label">
+                    Key
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter data"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    className="form-control"
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="dbConstantValue" className="form-label">
+                    SuperLikes per Price
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Response will appear here"
+                    value={responseValue}
+                    readOnly
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={handleApiInteractionSubmit}
+                disabled={loading}
+                className="btn btn-primary mt-3"
+              >
+                {loading ? 'Processing...' : 'Submit'}
+              </button>
+            </form>
+          </div>
+
+          {/* Package Creation Form */}
           <form onSubmit={handleSubmit} className="mt-4">
             <div className="row">
               <div className="col-md-6">
@@ -192,42 +300,11 @@ const SuperLike = () => {
             </button>
           </form>
 
-          <div className="mt-5">
-            <form onSubmit={handleDbConstantSubmit}>
-              <div className="row">
-                <div className="col-md-6">
-                  <label htmlFor="dbConstantKey" className="form-label">
-                    Price
-                  </label>
-                  <input
-                    type="text"
-                    id="dbConstantKey"
-                    className="form-control"
-                    value={dbConstantKey}
-                    onChange={(e) => setDbConstantKey(e.target.value)}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label htmlFor="dbConstantValue" className="form-label">
-                    SuperLikes per price
-                  </label>
-                  <input
-                    type="text"
-                    id="dbConstantValue"
-                    value={dbConstantKey}
-                    onChange={(e) => setDbConstantValue(e.target.value)}
-                  />
-                </div>
-              </div>
-              <button type="submit" className="btn btn-primary mt-3" disabled={loading}>
-                {loading ? 'Saving...' : 'Save Constant'}
-              </button>
-            </form>
-          </div>
-
+          {/* Success and Error Alerts */}
           {success && <div className="alert alert-success mt-3">{success}</div>}
           {error && <div className="alert alert-danger mt-3">{error}</div>}
 
+          {/* Packages List */}
           <div className="row mt-4">
             {packages.map((pkg) => (
               <div className="col-md-4" key={pkg.id}>
