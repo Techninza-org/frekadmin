@@ -7,6 +7,7 @@ import './scss/style.scss'
 import AllUsers from './views/pages/users/AllUsers'
 import AllTransaction from './views/pages/vendors/AllTransaction'
 import Report from './views/pages/others/report'
+import Superlike from './views/pages/superlikes/Superlike'
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/vendors" element={<AllTransaction />} />
 
           <Route path="/report" element={<Report />} />
+          <Route path="/superlikes" element={<Superlike />} />
           <Route path="*" name="Home" element={<DefaultLayout />} />
         </Routes>
       </Suspense>

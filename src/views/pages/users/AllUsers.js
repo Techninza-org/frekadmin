@@ -63,11 +63,6 @@ const AllUsers = () => {
         accessorFn: (dataRow) => (dataRow.active ? 'true' : 'false'),
       },
 
-      // {
-      //     header: 'Orders',
-      //     size: 60,
-      //     accessorFn: (dataRow) => <Link to={`/user/orders/${dataRow._id}`}><CIcon icon={cilPaperPlane} /></Link>
-      // },
       {
         header: 'Switch Active',
         size: 60,
@@ -76,7 +71,7 @@ const AllUsers = () => {
             icon={cilToggleOn}
             size="xl"
             onClick={() => handleSwitch(dataRow._id)}
-            style={{ cursor: 'pointer', color: 'blue' }}
+            style={{ cursor: 'pointer', color: 'black', width: '40px', height: '40px' }}
           />
         ),
       },

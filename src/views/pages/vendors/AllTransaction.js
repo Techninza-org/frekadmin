@@ -19,25 +19,6 @@ const AllTransaction = () => {
     setServices(ser)
   }
 
-  // async function handleSwitch(id) {
-  //   const confirmed = confirm('Confirm to delete?')
-  //   if (confirmed) {
-  //     const res = await axios.delete(
-  //       `${import.meta.env.VITE_BASE_URL}admin/deleteVendorById/${id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       },
-  //     )
-  //     if (res.status === 200) {
-  //       getUsers()
-  //     }
-  //   } else {
-  //     return
-  //   }
-  // }
-
   const columns = useMemo(
     () => [
       {
@@ -45,11 +26,6 @@ const AllTransaction = () => {
         accessorKey: 'orderId',
         size: 50,
       },
-      // {
-      //   header: 'Email',
-      //   accessorFn: (dataRow) => dataRow.userId.email,
-      //   size: 50,
-      // },
       {
         header: 'type',
         accessorKey: 'type',

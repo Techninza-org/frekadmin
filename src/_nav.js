@@ -2,6 +2,7 @@ import React from 'react'
 import CIcon from '@coreui/icons-react'
 import { cilDrop, cilPencil, cilSpeedometer } from '@coreui/icons'
 import { CNavItem, CNavTitle } from '@coreui/react'
+import { Link } from 'react-router-dom'
 
 const _nav = [
   {
@@ -40,6 +41,16 @@ const _nav = [
     component: CNavItem,
     name: 'Reports',
     to: '/report',
+    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'SuperLikes',
+  },
+  {
+    component: CNavItem,
+    name: 'SuperLikes',
+    to: '/superlikes',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
 ]
