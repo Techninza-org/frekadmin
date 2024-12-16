@@ -3,27 +3,85 @@ import axios from 'axios'
 import { AppHeader, AppSidebar } from '../../../components'
 
 const SuperLike = () => {
-  // State for input fields and the API response
   const [input1, setInput1] = useState('') // price
   const [input2, setInput2] = useState('') // superlikes
-  const [loading, setLoading] = useState(false) // For loading state
-  const [error, setError] = useState(null) // For error state
-  const [success, setSuccess] = useState(null) // For success message
-  const [data, setData] = useState(() => {
-    // Try to fetch the data from localStorage on initial load
-    const savedData = localStorage.getItem('superlikeData')
-    return savedData ? JSON.parse(savedData) : null
-  }) // For storing API response
+  const [dbConstantKey, setDbConstantKey] = useState('') // Input for the key
+  const [dbConstantValue, setDbConstantValue] = useState('') // Input for the value
+  const [dbConstants, setDbConstants] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [packages, setPackages] = useState([])
 
-  // Get the token from localStorage (or other storage method)
   const token = localStorage.getItem('token')
 
+  // Fetch all packages on component mount
   useEffect(() => {
-    // If there's data in state, store it in localStorage
-    if (data) {
-      localStorage.setItem('superlikeData', JSON.stringify(data))
+    const fetchPackages = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}admin/getAllPackages`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setPackages(response.data.packages)
+      } catch (err) {
+        console.error('Error fetching packages:', err)
+        setError('Error fetching packages!')
+      }
     }
-  }, [data]) // Runs every time `data` is updated
+    fetchPackages()
+  }, [token])
+
+  const handleDbConstantSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setSuccess(null)
+    setError(null)
+
+    if (!dbConstantKey || !dbConstantValue) {
+      setError('Key and value are required.')
+      setLoading(false)
+      return
+    }
+
+    const dataToSend = {
+      key: dbConstantKey,
+      value: dbConstantValue,
+    }
+
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}admin/setDbConstant`,
+        dataToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const updatedConstant = response.data.constant.perSuperLikePrice
+      setDbConstants((prev) => {
+        const index = prev.findIndex((item) => item.key === updatedConstant.key)
+        if (index !== -1) {
+          // Update existing constant
+          const updatedConstants = [...prev]
+          updatedConstants[index] = updatedConstant
+          return updatedConstants
+        }
+        return [...prev, updatedConstant]
+      })
+
+      setSuccess('Constant set successfully')
+    } catch (err) {
+      console.error('Error setting DB constant:', err)
+      setError('Failed to set DB constant')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -31,54 +89,58 @@ const SuperLike = () => {
     setError(null)
     setSuccess(null)
 
-    // Validate input fields and ensure they are numbers
     const price = parseFloat(input1)
     const superlikes = parseInt(input2)
 
-    // Check if inputs are valid numbers
     if (isNaN(price) || isNaN(superlikes)) {
       setError('Both Price and Superlikes must be valid numbers')
       setLoading(false)
       return
     }
 
-    // Prepare the data to send in the request
-    const dataToSend = {
-      price,
-      superlikes,
-    }
-
-    // Debugging - Log the values being sent to the API
-    console.log('Request data:', dataToSend)
-    console.log('Token:', token)
+    const dataToSend = { price, superlikes }
 
     try {
-      // Make the POST request using axios
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}admin/createPackage`, // Use your actual API URL
-        dataToSend, // Data to send
+        `${import.meta.env.VITE_BASE_URL}admin/createPackage`,
+        dataToSend,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-            'Content-Type': 'application/json', // Ensure content type is JSON
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
         },
       )
 
-      // Check the API response
-      console.log('API Response:', response.data)
-      setData(response.data.package) // Set the response data to state
-      setSuccess('Package created successfully') // Success message
+      setPackages((prevPackages) => [...prevPackages, response.data.package])
+      setSuccess('Package created successfully')
 
-      // Hide success message after 5 seconds
       setTimeout(() => {
         setSuccess(null)
-      }, 5000) // 5000ms = 5 seconds
+      }, 5000)
     } catch (err) {
-      setError('Error sending data!') // Error message
-      console.error('Error:', err.response || err) // Log the error
+      setError('Error creating package!')
     } finally {
-      setLoading(false) // Stop loading
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}admin/deletePackage/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setPackages((prevPackages) => prevPackages.filter((pkg) => pkg.id !== id))
+      setSuccess('Package deleted successfully')
+
+      setTimeout(() => {
+        setSuccess(null)
+      }, 5000)
+    } catch (err) {
+      console.error('Error deleting package:', err)
+      setError('Error deleting package!')
     }
   }
 
@@ -91,7 +153,6 @@ const SuperLike = () => {
           <h1 className="text-center">Superlikes</h1>
 
           <form onSubmit={handleSubmit} className="mt-4">
-            {/* Row for Price and Superlikes Inputs in two columns */}
             <div className="row">
               <div className="col-md-6">
                 <div className="mb-3">
@@ -103,8 +164,8 @@ const SuperLike = () => {
                     id="input1"
                     className="form-control"
                     value={input1}
-                    onChange={(e) => setInput1(e.target.value)} // Update state on input change
-                    min="0" // Optional: Ensure the price is non-negative
+                    onChange={(e) => setInput1(e.target.value)}
+                    min="0"
                   />
                 </div>
               </div>
@@ -119,8 +180,8 @@ const SuperLike = () => {
                     id="input2"
                     className="form-control"
                     value={input2}
-                    onChange={(e) => setInput2(e.target.value)} // Update state on input change
-                    min="0" // Optional: Ensure the superlikes is non-negative
+                    onChange={(e) => setInput2(e.target.value)}
+                    min="0"
                   />
                 </div>
               </div>
@@ -131,27 +192,60 @@ const SuperLike = () => {
             </button>
           </form>
 
-          {/* Display success or error message */}
+          <div className="mt-5">
+            <form onSubmit={handleDbConstantSubmit}>
+              <div className="row">
+                <div className="col-md-6">
+                  <label htmlFor="dbConstantKey" className="form-label">
+                    Price
+                  </label>
+                  <input
+                    type="text"
+                    id="dbConstantKey"
+                    className="form-control"
+                    value={dbConstantKey}
+                    onChange={(e) => setDbConstantKey(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="dbConstantValue" className="form-label">
+                    SuperLikes per price
+                  </label>
+                  <input
+                    type="text"
+                    id="dbConstantValue"
+                    value={dbConstantKey}
+                    onChange={(e) => setDbConstantValue(e.target.value)}
+                  />
+                </div>
+              </div>
+              <button type="submit" className="btn btn-primary mt-3" disabled={loading}>
+                {loading ? 'Saving...' : 'Save Constant'}
+              </button>
+            </form>
+          </div>
+
           {success && <div className="alert alert-success mt-3">{success}</div>}
           {error && <div className="alert alert-danger mt-3">{error}</div>}
 
-          {/* Always display the card with the data from localStorage */}
-          <div className="card mt-4 w-25">
-            <div className="card-body">
-              <h5 className="card-title pb-3">Package Details</h5>
-
-              {data ? (
-                <>
-                  <p>
-                    <strong>Superlikes:</strong> {data.superlikes}
-                    <br />
-                    <strong>Price:</strong> {data.price}
-                  </p>
-                </>
-              ) : (
-                <p>No data available yet. Please submit the form.</p>
-              )}
-            </div>
+          <div className="row mt-4">
+            {packages.map((pkg) => (
+              <div className="col-md-4" key={pkg.id}>
+                <div className="card">
+                  <div className="card-body">
+                    <h5>Package Details</h5>
+                    <p>
+                      <strong>Superlikes:</strong> {pkg.superlikes}
+                      <br />
+                      <strong>Price:</strong> {pkg.price}
+                    </p>
+                    <button className="btn btn-danger" onClick={() => handleDelete(pkg.id)}>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
