@@ -8,7 +8,8 @@ const SuperLike = () => {
   const [dbConstantKey, setDbConstantKey] = useState('') // Input for the key
   const [dbConstantValue, setDbConstantValue] = useState('') // Input for the value
   const [dbConstants, setDbConstants] = useState([]) // Database constants
-  const [loading, setLoading] = useState(false)
+  const [superLoading, setSuperLoading] = useState(false)
+  const [priceLoading, setPriceLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [packages, setPackages] = useState([]) // Packages state
@@ -17,7 +18,7 @@ const SuperLike = () => {
   const token = localStorage.getItem('token')
 
   // Fetch all packages on component mount
-  useEffect(() => {
+ 
     const fetchPackages = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}admin/getAllPackages`, {
@@ -31,6 +32,8 @@ const SuperLike = () => {
         setError('Error fetching packages!')
       }
     }
+   
+  useEffect(() => {
     fetchPackages()
   }, [token])
 
@@ -55,13 +58,13 @@ const SuperLike = () => {
 
   const handleDbConstantSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
+    setPriceLoading(true)
     setSuccess(null)
     setError(null)
 
     if (!dbConstantKey || !dbConstantValue) {
       setError('Key and value are required.')
-      setLoading(false)
+      setPriceLoading(false)
       return
     }
 
@@ -99,13 +102,13 @@ const SuperLike = () => {
       console.error('Error setting DB constant:', err)
       setError('Failed to set DB constant')
     } finally {
-      setLoading(false)
+      setPriceLoading(false)
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
+    setPriceLoading(true)
     setError(null)
     setSuccess(null)
 
@@ -114,7 +117,7 @@ const SuperLike = () => {
 
     if (isNaN(price) || isNaN(superlikes)) {
       setError('Both Price and Superlikes must be valid numbers')
-      setLoading(false)
+      setPriceLoading(false)
       return
     }
 
@@ -134,6 +137,8 @@ const SuperLike = () => {
 
       setPackages((prevPackages) => [...prevPackages, response.data.package])
       setSuccess('Package created successfully')
+      setInput1('')
+      setInput2('')
 
       setTimeout(() => {
         setSuccess(null)
@@ -141,7 +146,7 @@ const SuperLike = () => {
     } catch (err) {
       setError('Error creating package!')
     } finally {
-      setLoading(false)
+      setPriceLoading(false)
     }
   }
 
@@ -163,6 +168,7 @@ const SuperLike = () => {
         // Update the state to remove the deleted package
         setPackages((prevPackages) => prevPackages.filter((pkg) => pkg.id !== id))
         setSuccess('Package deleted successfully')
+        fetchPackages()
 
         // Reset success message after 5 seconds
         setTimeout(() => {
@@ -180,14 +186,18 @@ const SuperLike = () => {
   const handleInputChange = (event) => {
     setInputValue(event.target.value)
   }
+  console.log('inputValue:', inputValue)
 
   const handleApiInteractionSubmit = async () => {
-    setLoading(true)
+    setSuperLoading(true)
     try {
       const [putResponse, getResponse] = await Promise.all([
         axios.put(
           `${import.meta.env.VITE_BASE_URL}admin/setDbConstant`,
-          { data: inputValue },
+          {
+            perSuperLikePrice:inputValue ,
+
+          },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -203,12 +213,16 @@ const SuperLike = () => {
         }),
       ])
 
+      
+
       setResponseValue(getResponse.data?.getDbConstants?.perSuperLikePrice || 'No data received')
+      setInputValue('')
+
     } catch (error) {
       console.error('Error during API calls:', error)
       setResponseValue('Error: Could not complete requests.')
     } finally {
-      setLoading(false)
+      setSuperLoading(false)
     }
   }
 
@@ -251,10 +265,10 @@ const SuperLike = () => {
               </div>
               <button
                 onClick={handleApiInteractionSubmit}
-                disabled={loading}
+                disabled={superLoading}
                 className="btn btn-primary mt-3"
               >
-                {loading ? 'Processing...' : 'Submit'}
+                {superLoading ? 'Processing...' : 'Submit'}
               </button>
             </form>
           </div>
@@ -295,8 +309,8 @@ const SuperLike = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Loading...' : 'Submit'}
+            <button type="submit" className="btn btn-primary" disabled={priceLoading}>
+              {priceLoading ? 'Loading...' : 'Submit'}
             </button>
           </form>
 
@@ -307,7 +321,7 @@ const SuperLike = () => {
           {/* Packages List */}
           <div className="row mt-4">
             {packages.map((pkg) => (
-              <div className="col-md-4" key={pkg.id}>
+              <div className="col-md-4 mb-2" key={pkg._id}>
                 <div className="card">
                   <div className="card-body">
                     <h5>Package Details</h5>
@@ -316,7 +330,7 @@ const SuperLike = () => {
                       <br />
                       <strong>Price:</strong> {pkg.price}
                     </p>
-                    <button className="btn btn-danger" onClick={() => handleDelete(pkg.id)}>
+                    <button className="btn btn-danger text-white" onClick={() => handleDelete(pkg._id)}>
                       Delete
                     </button>
                   </div>
