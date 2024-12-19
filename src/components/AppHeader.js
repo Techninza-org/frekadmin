@@ -25,8 +25,7 @@ import {
   cilSun,
 } from '@coreui/icons'
 
-import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
+import { AppHeaderDropdown } from './header/Index'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -61,9 +60,7 @@ const AppHeader = () => {
             <CNavLink href="/dashboard">Users</CNavLink>
           </CNavItem> */}
         </CHeaderNav>
-        <CHeaderNav className="ms-auto">
-
-        </CHeaderNav>
+        <CHeaderNav className="ms-auto"></CHeaderNav>
         <CHeaderNav>
           <CDropdown variant="nav-item" placement="bottom-end">
             <CDropdownToggle caret={false}>

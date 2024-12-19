@@ -6,7 +6,7 @@ import { CCloseButton, CImage, CSidebar, CSidebarBrand, CSidebarHeader } from '@
 import { AppSidebarNav } from './AppSidebarNav'
 
 // sidebar nav config
-import navigation from '../_nav'
+import navigation from '../_Nav'
 import AppFooter from './AppFooter'
 
 const AppSidebar = () => {

@@ -6,7 +6,7 @@ import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import AllUsers from './views/pages/users/AllUsers'
 import AllTransaction from './views/pages/vendors/AllTransaction'
-import Report from './views/pages/others/report'
+import Report from './views/pages/others/Report'
 import Superlike from './views/pages/superlikes/Superlike'
 
 // Containers

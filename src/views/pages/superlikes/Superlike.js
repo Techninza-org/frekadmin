@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { AppHeader, AppSidebar } from '../../../components'
+import { AppHeader, AppSidebar } from '../../../components/Index'
 
 const SuperLike = () => {
   const [input1, setInput1] = useState('') // price
@@ -18,21 +18,21 @@ const SuperLike = () => {
   const token = localStorage.getItem('token')
 
   // Fetch all packages on component mount
- 
-    const fetchPackages = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}admin/getAllPackages`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        setPackages(response.data.packages)
-      } catch (err) {
-        console.error('Error fetching packages:', err)
-        setError('Error fetching packages!')
-      }
+
+  const fetchPackages = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}admin/getAllPackages`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setPackages(response.data.packages)
+    } catch (err) {
+      console.error('Error fetching packages:', err)
+      setError('Error fetching packages!')
     }
-   
+  }
+
   useEffect(() => {
     fetchPackages()
   }, [token])
@@ -195,8 +195,7 @@ const SuperLike = () => {
         axios.put(
           `${import.meta.env.VITE_BASE_URL}admin/setDbConstant`,
           {
-            perSuperLikePrice:inputValue ,
-
+            perSuperLikePrice: inputValue,
           },
           {
             headers: {
@@ -213,11 +212,8 @@ const SuperLike = () => {
         }),
       ])
 
-      
-
       setResponseValue(getResponse.data?.getDbConstants?.perSuperLikePrice || 'No data received')
       setInputValue('')
-
     } catch (error) {
       console.error('Error during API calls:', error)
       setResponseValue('Error: Could not complete requests.')
@@ -330,7 +326,10 @@ const SuperLike = () => {
                       <br />
                       <strong>Price:</strong> {pkg.price}
                     </p>
-                    <button className="btn btn-danger text-white" onClick={() => handleDelete(pkg._id)}>
+                    <button
+                      className="btn btn-danger text-white"
+                      onClick={() => handleDelete(pkg._id)}
+                    >
                       Delete
                     </button>
                   </div>

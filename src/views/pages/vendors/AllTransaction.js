@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { MantineReactTable, useMantineReactTable } from 'mantine-react-table'
 import CIcon from '@coreui/icons-react'
 import { cilCheck, cilPaperPlane, cilTrash, cilList } from '@coreui/icons'
-import { AppSidebar, AppHeader } from '../../../components/index'
+import { AppSidebar, AppHeader } from '../../../components/Index'
 
 const AllTransaction = () => {
   const [services, setServices] = useState([])
