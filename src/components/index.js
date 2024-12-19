@@ -1,13 +1,13 @@
-import AppBreadcrumb from './AppBreadcrumb'
-import AppContent from './AppContent'
-import AppFooter from './AppFooter'
-import AppHeader from './AppHeader'
-import AppHeaderDropdown from './header/AppHeaderDropdown'
-import AppSidebar from './AppSidebar'
-import DocsCallout from './DocsCallout'
-import DocsLink from './DocsLink'
-import DocsExample from './DocsExample'
-import DefaultLayout from '../layout/DefaultLayout'
+import AppBreadcrumb from './AppBreadcrumb.js'
+import AppContent from './AppContent.js'
+import AppFooter from './AppFooter.js'
+import AppHeader from './AppHeader.js'
+import AppHeaderDropdown from './header/AppHeaderDropdown.js'
+import AppSidebar from './AppSidebar.js'
+import DocsCallout from './DocsCallout.js'
+import DocsLink from './DocsLink.js'
+import DocsExample from './DocsExample.js'
+import DefaultLayout from '../layout/DefaultLayout.js'
 
 export {
   AppBreadcrumb,
