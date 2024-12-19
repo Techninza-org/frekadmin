@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { AppHeader, AppSidebar } from '../../../components/Index'
+import { AppHeader, AppSidebar } from '../../../components/index'
 
 const SuperLike = () => {
   const [input1, setInput1] = useState('') // price
