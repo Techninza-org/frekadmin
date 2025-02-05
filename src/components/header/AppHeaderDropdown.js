@@ -22,7 +22,6 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
 import { useNavigate } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
@@ -32,10 +31,6 @@ const AppHeaderDropdown = () => {
     if (localStorage.getItem('user')) {
       loggedIn = true
     }
-    // if (loggedIn) {
-    //   const user_name = JSON.parse(localStorage.getItem('user')).name;
-    //   setFirstLetter(user_name?.charAt(0).toUpperCase() || '')
-    // }
     if (!loggedIn) {
       navigate('/login')
     }
