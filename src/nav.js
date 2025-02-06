@@ -4,7 +4,7 @@ import { cilDrop, cilPencil, cilSpeedometer } from '@coreui/icons'
 import { CNavItem, CNavTitle } from '@coreui/react'
 import { Link } from 'react-router-dom'
 
-const _nav = [
+const nav = [
   {
     component: CNavItem,
     name: 'Dashboard',
@@ -55,4 +55,4 @@ const _nav = [
   },
 ]
 
-export default _nav
+export default nav
